@@ -14,20 +14,25 @@
     .cover{
         height: 200px;
     }
+    .singleline{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
     .activity-cover{
         height: 400px;
     }
 </style>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">野麦</a>
+        <a class="navbar-brand">野麦</a>
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">首页</a>
+                    <a class="nav-link" th:href="@{'/index'}">首页</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">麦圈</a>
+                    <a class="nav-link" th:href="@{'/activity'}">麦圈</a>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" th:action="@{/book}" method="post">
@@ -46,7 +51,7 @@
             </ol>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <a th:href="${activityList.get(0).getCover()}">
+                    <a th:href="@{'/act/'+${activityList.get(0).getId()}}">
                         <img th:src="${activityList.get(0).getCover()}" class="d-block w-100 activity-cover" alt="...">
                         <div class="carousel-caption d-none d-md-block">
                             <h5 th:text="${activityList.get(0).getActivityName()}">First slide label</h5>
@@ -55,7 +60,7 @@
                     </a>
                 </div>
                 <div class="carousel-item">
-                    <a th:href="${activityList.get(1).getCover()}">
+                    <a th:href="@{'/act/'+${activityList.get(1).getId()}}">
                         <img th:src="${activityList.get(1).getCover()}" class="d-block w-100 activity-cover" alt="...">
                         <div class="carousel-caption d-none d-md-block">
                             <h5 th:text="${activityList.get(1).getActivityName()}">First slide label</h5>
@@ -64,7 +69,7 @@
                     </a>
                 </div>
                 <div class="carousel-item">
-                    <a th:href="${activityList.get(2).getCover()}">
+                    <a th:href="@{'/act/'+${activityList.get(2).getId()}}">
                         <img th:src="${activityList.get(2).getCover()}" class="d-block w-100 activity-cover" alt="...">
                         <div class="carousel-caption d-none d-md-block">
                             <h5 th:text="${activityList.get(2).getActivityName()}">First slide label</h5>
@@ -86,46 +91,13 @@
         <h4>热门书籍</h4>
         <br />
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-2"  th:each="book: ${hotBooks.subList(0,6)}">
                 <div class="card">
-                    <a th:href="@{'/book/'+${hotBooks.get(0).getId()}}">
-                        <img th:src="${hotBooks.get(0).getCover()}" class="card-img cover" alt="热门书籍">
+                    <a th:href="@{'/book/'+${book.getId()}}">
+                        <img th:src="${book.getCover()}" class="card-img cover" alt="热门书籍">
                     </a>
                     <div class="card-body">
-                        <a class="card-title" th:text="${hotBooks.get(0).getName()}" th:href="@{'/book/'+${hotBooks.get(0).getId()}}">Special title treatment</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
-            <div class="col-sm-2">
-                <div class="card">
-                    <a th:href="@{'/book/'+${hotBooks.get(1).getId()}}">
-                        <img th:src="${hotBooks.get(1).getCover()}" class="card-img cover" alt="热门书籍">
-                    </a>
-                    <div class="card-body">
-                        <a class="card-title" th:text="${hotBooks.get(1).getName()}" th:href="@{'/book/'+${hotBooks.get(1).getId()}}">Special title treatment</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
-            <div class="col-sm-2">
-                <div class="card">
-                    <a th:href="@{'/book/'+${hotBooks.get(2).getId()}}">
-                        <img th:src="${hotBooks.get(2).getCover()}" class="card-img cover" alt="热门书籍">
-                    </a>
-                    <div class="card-body">
-                        <a class="card-title" th:text="${hotBooks.get(2).getName()}" th:href="@{'/book/'+${hotBooks.get(2).getId()}}">Special title treatment</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
-            <div class="col-sm-2">
-                <div class="card">
-                    <a th:href="@{'/book/'+${hotBooks.get(3).getId()}}">
-                        <img th:src="${hotBooks.get(3).getCover()}" class="card-img cover" alt="热门书籍">
-                    </a>
-                    <div class="card-body">
-                        <a class="card-title" th:text="${hotBooks.get(3).getName()}" th:href="@{'/book/'+${hotBooks.get(3).getId()}}">Special title treatment</a>
+                        <a class="card-title" th:text="${book.getName()}" th:href="@{'/book/'+${book.getId()}}">Special title treatment</a>
                     </div>
                 </div>
             </div>

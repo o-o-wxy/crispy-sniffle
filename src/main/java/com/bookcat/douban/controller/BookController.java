@@ -99,7 +99,58 @@ public class BookController {
         }
         return ret;
     }
-
+    @GetMapping("/act/{id}")
+    String actContentGet(Model model,HttpServletRequest request,@PathVariable int id){
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        ActivityEntity activityEntity = activityRepository.findById(id);
+        Activity activity = new Activity();
+        BeanUtils.copyProperties(activityEntity,activity);
+        model.addAttribute("activity",activity);
+        return "actContent";
+    }
+    @GetMapping("/activity")
+    String activityGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        return "activity";
+    }
+    @GetMapping("/pub")
+    String pubGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        return "pub";
+    }
 //    @PostMapping("/find")
 //    @ResponseBody
 //    List<BooksEntity> findByName(@RequestParam("key") String key) {
