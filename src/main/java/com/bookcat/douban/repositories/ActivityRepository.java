@@ -8,4 +8,5 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<ActivityEntity, Integer> {
     List<ActivityEntity> findBySelected(int selected);
     ActivityEntity findById(int id);
+    List<ActivityEntity> findAll();
 }

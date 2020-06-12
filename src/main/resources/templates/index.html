@@ -32,10 +32,13 @@
                     <a class="nav-link" th:href="@{'/index'}">首页</a>
                 </li>
                 <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/act'}">活动</a>
+                </li>
+                <li class="nav-item active">
                     <a class="nav-link" th:href="@{'/activity'}">麦圈</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0" th:action="@{/book}" method="post">
+            <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
                 <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
@@ -54,8 +57,8 @@
                     <a th:href="@{'/act/'+${activityList.get(0).getId()}}">
                         <img th:src="${activityList.get(0).getCover()}" class="d-block w-100 activity-cover" alt="...">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5 th:text="${activityList.get(0).getActivityName()}">First slide label</h5>
-                            <p th:text="${activityList.get(0).getActivityContext().substring(0,100)}+'……'">Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                            <h5 style="text-shadow: black 0.1em 0.1em 0.2em" th:text="${activityList.get(0).getActivityName()}">First slide label</h5>
+                            <p style="text-shadow: black 0.1em 0.1em 0.2em" th:text="${activityList.get(0).getActivityContext().substring(0,100)}+'……'">Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                         </div>
                     </a>
                 </div>
@@ -101,7 +104,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-1"></div>
         </div>
         <br />
         <h4>推荐书籍</h4>

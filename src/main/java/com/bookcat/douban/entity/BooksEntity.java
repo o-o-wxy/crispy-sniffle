@@ -27,7 +27,7 @@ public class BooksEntity {
     private String isbn;
     private String tags;
     private int doubanId;
-    private BigDecimal doubanScore;
+    private double doubanScore;
     private int doubanVotes;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -225,11 +225,11 @@ public class BooksEntity {
 
     @Basic
     @Column(name = "douban_score")
-    public BigDecimal getDoubanScore() {
+    public double getDoubanScore() {
         return doubanScore;
     }
 
-    public void setDoubanScore(BigDecimal doubanScore) {
+    public void setDoubanScore(double doubanScore) {
         this.doubanScore = doubanScore;
     }
 

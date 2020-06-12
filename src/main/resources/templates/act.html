@@ -1,0 +1,81 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="referrer" content="never">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>活动</title>
+</head>
+<style>
+    .cover{
+        height: 200px;
+    }
+    .activity-cover2{
+        width: 400px;
+        height: 200px;
+    }
+    .myrow{
+        display: flex;
+        flex-direction:row;
+        justify-content:space-around;
+    }
+    .singleline{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .activity-cover{
+        height: 400px;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand">野麦</a>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/index'}">首页</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/activity'}">麦圈</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" th:action="@{/book}" method="post">
+                <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
+            </form>
+        </div>
+    </nav>
+    <div class="container-fluid" style="padding: 70px">
+        <ul class="list-group" th:each="activity: ${activityList}" style="width: 1000px">
+            <li class="myrow" style="width: 1000px;padding-top: 40px">
+                <div>
+                    <a th:href="@{'/act/'+${activity.getId()}}">
+                        <img class="card-img activity-cover2" th:src="${activity.getCover()}" alt="Card image">
+                    </a>
+                </div>
+                <div style="padding-left: 40px">
+                    <a th:href="@{'/act/'+${activity.getId()}}">
+                        <h5 th:text="${activity.getActivityName()}" style="font-weight: bold;color:black;text-decoration-line: none">First slide label</h5>
+                        <p style="padding-top: 15px;color:black;text-decoration-line: none" th:text="${activity.getActivityContext().substring(0,100)}+'……'">Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                    </a>
+                </div>
+            </li>
+        </ul>
+
+
+    </div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

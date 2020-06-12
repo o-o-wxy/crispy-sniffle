@@ -1,11 +1,12 @@
 package com.bookcat.douban.formbean;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Book {
     private int id;
     private String name;
+    private String subName;
+    private String altName;
     private String cover;
     private String summary;
     private String authors;
@@ -19,7 +20,11 @@ public class Book {
     private String binding;
     private String isbn;
     private String tags;
-    private BigDecimal doubanScore;
+    private int doubanId;
+    private double doubanScore;
+    private int doubanVotes;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private Integer count;
 
     public int getId() {
@@ -36,6 +41,22 @@ public class Book {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSubName() {
+        return subName;
+    }
+
+    public void setSubName(String subName) {
+        this.subName = subName;
+    }
+
+    public String getAltName() {
+        return altName;
+    }
+
+    public void setAltName(String altName) {
+        this.altName = altName;
     }
 
     public String getCover() {
@@ -142,12 +163,44 @@ public class Book {
         this.tags = tags;
     }
 
-    public BigDecimal getDoubanScore() {
+    public int getDoubanId() {
+        return doubanId;
+    }
+
+    public void setDoubanId(int doubanId) {
+        this.doubanId = doubanId;
+    }
+
+    public double getDoubanScore() {
         return doubanScore;
     }
 
-    public void setDoubanScore(BigDecimal doubanScore) {
+    public void setDoubanScore(double doubanScore) {
         this.doubanScore = doubanScore;
+    }
+
+    public int getDoubanVotes() {
+        return doubanVotes;
+    }
+
+    public void setDoubanVotes(int doubanVotes) {
+        this.doubanVotes = doubanVotes;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Integer getCount() {

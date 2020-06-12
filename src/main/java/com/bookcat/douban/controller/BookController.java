@@ -6,6 +6,8 @@ import com.bookcat.douban.formbean.Activity;
 import com.bookcat.douban.formbean.Book;
 import com.bookcat.douban.repositories.ActivityRepository;
 import com.bookcat.douban.repositories.BookRepository;
+import com.bookcat.douban.repositories.ESRepository;
+import jdk.nashorn.internal.runtime.UnwarrantedOptimismException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +22,13 @@ import java.util.List;
 public class BookController {
     private final BookRepository repository;
     private final ActivityRepository activityRepository;
-    BookController(BookRepository repository, ActivityRepository activityRepository){
+    private final ESRepository esRepository;
+    BookController(BookRepository repository, ActivityRepository activityRepository,ESRepository esRepository){
         this.repository = repository;
         this.activityRepository = activityRepository;
+        this.esRepository = esRepository;
     }
-
+    //首页
     @GetMapping("/index")
     String indexGet(Model model, HttpServletRequest request) {
         if(request.getCookies()!=null){
@@ -85,20 +89,32 @@ public class BookController {
         model.addAttribute("latestBooks",latestBooks);
         return "index";
     }
-    @PostMapping("/book")
-    List<Book> findByKey(@RequestParam("key") String key) {
-        List<BooksEntity> retEntity = repository.findByKey(key);
-        List<Book>  ret = new ArrayList<Book>();
-
-        if (retEntity.size()!=0) {
-            for (BooksEntity booksEntity : retEntity) {
-                Book book = new Book();
-                BeanUtils.copyProperties(booksEntity, book);
-                ret.add(book);
+    //活动
+    @GetMapping("/act")
+    String actGet(Model model,HttpServletRequest request){
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
             }
         }
-        return ret;
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        List<ActivityEntity> activityEntityList = activityRepository.findAll();
+        List<Activity> activityList = new ArrayList<>();
+        for (ActivityEntity activity:activityEntityList) {
+            Activity newActivity = new Activity();
+            BeanUtils.copyProperties(activity,newActivity);
+            activityList.add(newActivity);
+        }
+        model.addAttribute("activityList",activityList);
+        return "act";
     }
+    //具体的活动
     @GetMapping("/act/{id}")
     String actContentGet(Model model,HttpServletRequest request,@PathVariable int id){
         if(request.getCookies()!=null){
@@ -119,6 +135,27 @@ public class BookController {
         model.addAttribute("activity",activity);
         return "actContent";
     }
+    //搜索结果
+    @PostMapping("/search")
+    String searchPost(Model model,HttpServletRequest request){
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        String key = request.getParameter("key");
+        model.addAttribute("bookList",esRepository.findBykey(key));
+        return "search";
+    }
+
+    //麦圈活动
     @GetMapping("/activity")
     String activityGet(Model model, HttpServletRequest request) {
         if(request.getCookies()!=null){
@@ -135,6 +172,8 @@ public class BookController {
             model.addAttribute("userId",0);
         return "activity";
     }
+
+    //发布动态
     @GetMapping("/pub")
     String pubGet(Model model, HttpServletRequest request) {
         if(request.getCookies()!=null){
@@ -150,69 +189,5 @@ public class BookController {
         if(model.getAttribute("userId")==null)
             model.addAttribute("userId",0);
         return "pub";
-    }
-//    @PostMapping("/find")
-//    @ResponseBody
-//    List<BooksEntity> findByName(@RequestParam("key") String key) {
-//        return repository.findByNameOrsOrSubNameOrsOrSeriesOrpOrPublisherOrAuthorsOrTagsLike(key);
-//    }
-
-    @GetMapping("/book/{id}")
-    Book findById(@PathVariable int id ) {
-        BooksEntity retEntity = repository.findById(id);
-        Book ret = new Book();
-        BeanUtils.copyProperties(retEntity, ret);
-
-        return ret;
-    }
-
-//    @GetMapping("/book/recommend")//推荐书籍
-//    List<Book> findRecommend() {
-//        List<BooksEntity> recommendBookEntityList = repository.findRecommend();
-//        List<Book>  recommendBooks = new ArrayList<Book>();
-//
-//        if (recommendBookEntityList.size()!=0) {
-//            for (BooksEntity booksEntity : recommendBookEntityList) {
-//                Book book = new Book();
-//                BeanUtils.copyProperties(booksEntity, book);
-//                recommendBooks.add(book);
-//            }
-//        }
-//        return recommendBooks;
-//    }
-
-//    @GetMapping("/book/hot")//热门书籍
-//    List<Book> findHot() {
-//        List<BooksEntity> hotBookEntityList = repository.findHot();
-//        List<Book>  hotBooks = new ArrayList<>();
-//        if (hotBookEntityList.size()!=0) {
-//            for (BooksEntity booksEntity : hotBookEntityList) {
-//                Book book = new Book();
-//                BeanUtils.copyProperties(booksEntity, book);
-//                hotBooks.add(book);
-//            }
-//        }
-//        return ret;
-//    }
-
-//    @GetMapping("/book/latest")//新书
-//    List<Book> findLatest() {
-//        List<BooksEntity> latestBookEntityList = repository.findLatest();
-//        List<Book>  latestBooks = new ArrayList<Book>();
-//
-//        if (latestBookEntityList.size()!=0) {
-//            for (BooksEntity booksEntity : latestBookEntityList) {
-//                Book book = new Book();
-//                BeanUtils.copyProperties(booksEntity, book);
-//                latestBooks.add(book);
-//            }
-//        }
-//        return latestBooks;
-//    }
-
-    @PostMapping("/look/{id}")
-    int look(@PathVariable int id ) {
-        int ret = repository.look(id);
-        return ret;
     }
 }
