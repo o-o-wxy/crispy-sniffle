@@ -1,0 +1,115 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="referrer" content="never">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>主页</title>
+</head>
+<style>
+    .myrow{
+        display: flex;
+        flex-direction:row;
+        justify-content:flex-start;
+    }
+    .cover{
+        width: 150px;
+        height: 200px;
+    }
+    .singleline{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .activity-cover{
+        height: 400px;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand">野麦</a>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/index'}">首页</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/act'}">活动</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{'/activity'}">麦圈</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
+                <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
+            </form>
+        </div>
+    </nav>
+    <div class="container-fluid" style="padding: 70px">
+        <div>
+            <h3 style="font-weight: bold" th:text="${book.getName()}"></h3>
+        </div>
+        <div class="myrow" >
+            <div style="width: 170px">
+                <img class="cover"  th:src="${book.getCover()}">
+            </div>
+            <div style="width: 500px">
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSubName())}" th:text="'子标题:'+${book.getSubName()}">子标题</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTranslators())}" th:text="'译者:'+${book.getTranslators()}">译者</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAltName())}" th:text="'原标题:'+${book.getAltName()}">原标题</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAuthors())}" th:text="'作者:'+${book.getAuthors()}">作者</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSeries())}" th:text="'系列:'+${book.getSeries()}">系列</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublisher())}" th:text="'出版社:'+${book.getPublisher()}">出版社</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublishDate())}" th:text="'出版日期:'+${book.getPublishDate()}">出版日期</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPages())}" th:text="'页数:'+${book.getPages()}">页数</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPrice())}" th:text="'价格:'+${book.getPrice()}">价格</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getBinding())}" th:text="${book.getBinding()}">包装</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getIsbn())}" th:text="'isbn:'+${book.getIsbn()}">isbn</p>
+                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTags())}" th:text="${book.getTags()}">标签</p>
+            </div>
+            <div style="width: 300px">
+                <div>
+                    <h6>评分</h6>
+                    <h3 style="color: orange" th:text="${book.getDoubanScore()}"></h3>
+                    <p style="color: grey" th:text="'有 '+${book.getDoubanVotes()}+' 位麦友打了分'"></p>
+                </div>
+                <div>
+                    <p>没有下定决心写的打分内容</p>
+                </div>
+            </div>
+        </div>
+        <div th:if="${not #strings.isEmpty(book.getSummary())}" style="padding-top:30px;width: 900px">
+            <h6 style="color: seagreen">简介</h6>
+            <p th:text="${book.getSummary()}"></p>
+        </div>
+        <div th:if="${not #strings.isEmpty(book.getAuthorIntro())}" style="padding-top:30px;width: 900px">
+            <h6 style="color: seagreen">作者简介</h6>
+            <p th:text="${book.getAuthorIntro()}"></p>
+        </div>
+        <div style="padding-top: 30px;width: 900px">
+            <h6 style="color: seagreen">麦友的阅读记录</h6>
+            <div th:each="comment:${comments}">
+                <hr>
+                <div style="flex-direction:row;justify-content: space-between">
+                    <a style="color: seagreen;font-weight: bold;text-decoration-line: none" th:text="${comment.getUserName()}" th:href="@{'/user/'+${comment.getUserId()}}">用户名</a>
+                    <p style="color: grey" th:text="${comment.getCreate()}">创建时间</p>
+                </div>
+                <p th:text="${comment.getContext()}">评价内容</p>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

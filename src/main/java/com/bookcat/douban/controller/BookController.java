@@ -2,12 +2,13 @@ package com.bookcat.douban.controller;
 
 import com.bookcat.douban.entity.ActivityEntity;
 import com.bookcat.douban.entity.BooksEntity;
+import com.bookcat.douban.entity.CommentEntity;
 import com.bookcat.douban.formbean.Activity;
 import com.bookcat.douban.formbean.Book;
 import com.bookcat.douban.repositories.ActivityRepository;
 import com.bookcat.douban.repositories.BookRepository;
+import com.bookcat.douban.repositories.CommentRepository;
 import com.bookcat.douban.repositories.ESRepository;
-import jdk.nashorn.internal.runtime.UnwarrantedOptimismException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -23,8 +25,10 @@ public class BookController {
     private final BookRepository repository;
     private final ActivityRepository activityRepository;
     private final ESRepository esRepository;
-    BookController(BookRepository repository, ActivityRepository activityRepository,ESRepository esRepository){
+    private final CommentRepository commentRepository;
+    BookController(BookRepository repository,CommentRepository commentRepository, ActivityRepository activityRepository,ESRepository esRepository){
         this.repository = repository;
+        this.commentRepository = commentRepository;
         this.activityRepository = activityRepository;
         this.esRepository = esRepository;
     }
@@ -89,6 +93,7 @@ public class BookController {
         model.addAttribute("latestBooks",latestBooks);
         return "index";
     }
+
     //活动
     @GetMapping("/act")
     String actGet(Model model,HttpServletRequest request){
@@ -153,6 +158,27 @@ public class BookController {
         String key = request.getParameter("key");
         model.addAttribute("bookList",esRepository.findBykey(key));
         return "search";
+    }
+
+    @GetMapping("/book/{id}")
+    String bookGet(Model model,HttpServletRequest request,@PathVariable int id){
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        model.addAttribute("book",repository.findById(id));
+        List<CommentEntity> commentEntityList = commentRepository.findAllByBookId(id);
+        Collections.reverse(commentEntityList);
+        model.addAttribute("comments",commentEntityList);
+        return "book";
     }
 
     //麦圈活动
