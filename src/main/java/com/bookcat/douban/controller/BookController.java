@@ -1,19 +1,16 @@
 package com.bookcat.douban.controller;
 
-import com.bookcat.douban.entity.ActivityEntity;
-import com.bookcat.douban.entity.BooksEntity;
-import com.bookcat.douban.entity.CommentEntity;
+import com.bookcat.douban.entity.*;
 import com.bookcat.douban.formbean.Activity;
 import com.bookcat.douban.formbean.Book;
-import com.bookcat.douban.repositories.ActivityRepository;
-import com.bookcat.douban.repositories.BookRepository;
-import com.bookcat.douban.repositories.CommentRepository;
-import com.bookcat.douban.repositories.ESRepository;
+import com.bookcat.douban.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -26,8 +23,12 @@ public class BookController {
     private final ActivityRepository activityRepository;
     private final ESRepository esRepository;
     private final CommentRepository commentRepository;
-    BookController(BookRepository repository,CommentRepository commentRepository, ActivityRepository activityRepository,ESRepository esRepository){
+    private final RatingsRepository ratingsRepository;
+    private final SaleRepository saleRepository;
+    BookController(BookRepository repository,CommentRepository commentRepository,SaleRepository saleRepository, RatingsRepository ratingsRepository, ActivityRepository activityRepository,ESRepository esRepository){
         this.repository = repository;
+        this.saleRepository =saleRepository;
+        this.ratingsRepository = ratingsRepository;
         this.commentRepository = commentRepository;
         this.activityRepository = activityRepository;
         this.esRepository = esRepository;
@@ -162,12 +163,18 @@ public class BookController {
 
     @GetMapping("/book/{id}")
     String bookGet(Model model,HttpServletRequest request,@PathVariable int id){
+        String username = null;
+        int userid = 0;
         if(request.getCookies()!=null){
             for (Cookie cookie:request.getCookies()) {
-                if(cookie.getName().equals("userName"))
-                    model.addAttribute("userName",cookie.getValue());
-                if (cookie.getName().equals("userId"))
-                    model.addAttribute("userId",cookie.getValue());
+                if(cookie.getName().equals("userName")) {
+                    model.addAttribute("userName", cookie.getValue());
+                    username = cookie.getValue();
+                }
+                if (cookie.getName().equals("userId")) {
+                    model.addAttribute("userId", cookie.getValue());
+                    userid = Integer.parseInt(cookie.getValue());
+                }
             }
         }
         if(model.getAttribute("userName")==null)
@@ -178,7 +185,36 @@ public class BookController {
         List<CommentEntity> commentEntityList = commentRepository.findAllByBookId(id);
         Collections.reverse(commentEntityList);
         model.addAttribute("comments",commentEntityList);
+        if(userid != 0){
+            RatingsEntity ratingsEntity = ratingsRepository.findByBookIdAndAndUserId(id,userid);
+            if(ratingsEntity != null) {
+                model.addAttribute("rating", ratingsEntity.getScore());
+            }
+            else {
+                model.addAttribute("rating",0.0);
+            }
+        }
+        model.addAttribute("success",request.getParameter("success"));
+        List<SaleEntity> saleEntities = saleRepository.findByBookid(id);
+        model.addAttribute("saleEntities",saleEntities);
+
         return "book";
+    }
+
+    @PostMapping("/sale")
+    public ModelAndView sale(HttpServletRequest request){
+        String href = request.getParameter("href");
+        String name = request.getParameter("uname");
+        int uid = Integer.parseInt(request.getParameter("uid"));
+        int bookid = Integer.parseInt(request.getParameter("bookid"));
+        SaleEntity entity = new SaleEntity();
+        entity.setBookid(bookid);
+        entity.setHref(href);
+        entity.setUserid(uid);
+        entity.setUsername(name);
+        saleRepository.save(entity);
+        ModelAndView newone =  new ModelAndView("redirect:/book/"+bookid);
+        return newone;
     }
 
     //麦圈活动

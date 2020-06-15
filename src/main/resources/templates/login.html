@@ -18,9 +18,10 @@
         <h2 style="color: seagreen;text-align: center" >野麦</h2>
         <br />
         <div class="alert alert-danger" th:if="${not #strings.isEmpty(msg)}" role="alert" th:text="${msg}"></div>
+        <div class="alert alert-primary" th:if="${not #strings.isEmpty(success)}" role="alert" th:text="${success}"></div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text" id="inputSid">用户名</span>
+                <span class="input-group-text" id="inputSid">登录id</span>
             </div>
             <input type="text" class="form-control" name="inputSid" required>
         </div>

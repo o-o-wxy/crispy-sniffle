@@ -14,10 +14,16 @@
 <body>
 
 <div class="container" style="width:400px;margin:0px auto;padding-top: 70px">
-    <form th:action="@{/login}" method="post" class="form-horizontal" >
+    <form th:action="@{/register}" method="post" class="form-horizontal" >
         <h2 style="color: seagreen;text-align: center" >注册</h2>
         <br />
-<!--        <div class="alert alert-danger" th:if="${not #strings.isEmpty(msg)}" role="alert" th:text="${msg}"></div>-->
+        <div class="alert alert-danger" th:if="${not #strings.isEmpty(msg)}" role="alert" th:text="${msg}"></div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputSid">登录id(仅限数字)</span>
+            </div>
+            <input type="text" class="form-control" name="inputSid" required>
+        </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="inputName">用户名</span>

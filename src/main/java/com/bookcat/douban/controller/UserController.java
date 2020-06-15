@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Controller
 public class UserController {
@@ -38,79 +39,75 @@ public class UserController {
         return "login";
     }
     @GetMapping("/login")
-    String loginGet(Model model) {
+    String loginGet(Model model,HttpServletRequest request) {
+        model.addAttribute("msg",request.getParameter("msg"));
+        model.addAttribute("success",request.getParameter("success"));
         return "login";
     }
 
     @PostMapping("/login")
-    String loginPost(HttpServletRequest request, HttpServletResponse response, Model model) {
+    public ModelAndView loginPost(HttpServletRequest request, HttpServletResponse response, Model model) {
+        if(!Pattern.compile("[0-9]*").matcher(request.getParameter("inputSid")).matches()){
+            ModelAndView newone =  new ModelAndView("redirect:/login");
+            newone.addObject("msg","id为数字");
+            return newone;
+        }
         int sid = Integer.parseInt(request.getParameter("inputSid"));
         String password = request.getParameter("inputPassword");
         UsersEntity user = repository.findByUserId(sid);
         System.out.println(sid+"  "+"   "+password);
         if(user == null) {
-            model.addAttribute("msg", "用户不存在");
-            return "login";
+            ModelAndView newone =  new ModelAndView("redirect:/login");
+            newone.addObject("msg","用户不存在");
+            return newone;
         }
         System.out.println(user.getPassword());
         System.out.println(password);
         if(!user.getPassword().equals(password)) {
-            model.addAttribute("msg", "密码错误");
-            return "login";
+            ModelAndView newone =  new ModelAndView("redirect:/login");
+            newone.addObject("msg","密码错误");
+            return newone;
         }
-        model.addAttribute("userId",Integer.toString(sid));
-        model.addAttribute("userName",user.getUserName());
         Cookie cookie1 = new Cookie("userId",Integer.toString(sid));
         response.addCookie(cookie1);
         Cookie cookie2 = new Cookie("userName",user.getUserName());
         response.addCookie(cookie2);
-        List<ActivityEntity> activityEntityList = activityRepository.findBySelected(1);
-        List<Activity> activityList =new ArrayList<>();
-        for (ActivityEntity activityEntity:activityEntityList){
-            Activity newOne = new Activity();
-            BeanUtils.copyProperties(activityEntity,newOne);
-            activityList.add(newOne);
-        }
-        model.addAttribute("activityList",activityList);
-
-        //热门书籍
-        List<BooksEntity> hotBookEntityList = bookRepository.findHot();
-        List<Book>  hotBooks = new ArrayList<>();
-        if (hotBookEntityList.size()!=0) {
-            for (BooksEntity booksEntity : hotBookEntityList) {
-                Book book = new Book();
-                BeanUtils.copyProperties(booksEntity, book);
-                hotBooks.add(book);
-            }
-        }
-        model.addAttribute("hotBooks",hotBooks);
-        //推荐书籍
-        List<BooksEntity> recommendBookEntityList = bookRepository.findRecommend();
-        List<Book>  recommendBooks = new ArrayList<Book>();
-
-        if (recommendBookEntityList.size()!=0) {
-            for (BooksEntity booksEntity : recommendBookEntityList) {
-                Book book = new Book();
-                BeanUtils.copyProperties(booksEntity, book);
-                recommendBooks.add(book);
-            }
-        }
-        model.addAttribute("recommendBooks",recommendBooks);
-        //新书
-        List<BooksEntity> latestBookEntityList = bookRepository.findLatest();
-        List<Book>  latestBooks = new ArrayList<Book>();
-
-        if (latestBookEntityList.size()!=0) {
-            for (BooksEntity booksEntity : latestBookEntityList) {
-                Book book = new Book();
-                BeanUtils.copyProperties(booksEntity, book);
-                latestBooks.add(book);
-            }
-        }
-        model.addAttribute("latestBooks",latestBooks);
-        return "index";
+        return new ModelAndView("redirect:/index");
     }
 
+    @GetMapping("/register")
+    String registerGet(Model model,HttpServletRequest request) {
+        model.addAttribute("msg",request.getParameter("msg"));
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public ModelAndView registerPost(HttpServletRequest request, HttpServletResponse response) {
+        if(!Pattern.compile("[0-9]*").matcher(request.getParameter("inputSid")).matches()){
+            ModelAndView newone =  new ModelAndView("redirect:/register");
+            newone.addObject("msg","id为数字");
+            return newone;
+        }
+        int sid = Integer.parseInt(request.getParameter("inputSid"));
+        if(repository.existsById(sid)){
+            ModelAndView newone =  new ModelAndView("redirect:/register");
+            newone.addObject("msg","用户id已存在");
+            return newone;
+        }
+        String name = request.getParameter("inputName");
+        String password = request.getParameter("inputPassword");
+        String email = request.getParameter("inputEmail");
+        UsersEntity entity = new UsersEntity();
+        entity.setPassword(password);
+        entity.setUserName(name);
+        entity.setUserId(sid);
+        entity.setEmail(email);
+        entity.setUserSummary("世界上任何书籍都不能带给你好运，但是它们能让你悄悄成为你自己。");
+        repository.save(entity);
+        ModelAndView newone =  new ModelAndView("redirect:/login");
+        newone.addObject("success","注册成功，要记住自己的用户名哦！"+sid);
+        return newone;
+    }
 
 
     @PostMapping("/add")
@@ -143,11 +140,12 @@ public class UserController {
     }
 
     @GetMapping("/score/{userid}/{bookid}/{score}")
-    @ResponseBody
-    int score(@PathVariable int userid,@PathVariable int bookid,@PathVariable int score){
+    public ModelAndView score(@PathVariable int userid,@PathVariable int bookid,@PathVariable int score){
         int ret = repository.score(score,bookid);
         repository.rating(userid,bookid,score);
-        return  ret;
+        ModelAndView newone =  new ModelAndView("redirect:/book/"+bookid);
+        newone.addObject("success","成功修改评分为"+score);
+        return newone;
     }
 
     //修改资料 (未写
@@ -248,7 +246,7 @@ public class UserController {
     //发表评论
     @PostMapping("/comment")
     public ModelAndView commentPost(Model model, HttpServletRequest request) {
-        int bookid = 0;
+        int bookid = Integer.parseInt(request.getParameter("bookid"));
         String title = request.getParameter("title");
         String context = request.getParameter("context");
         int uid = Integer.parseInt(request.getParameter("uid"));
@@ -256,7 +254,10 @@ public class UserController {
 
         commentRepository.comment(bookid,title,context,uid,uname);
 
-        return new ModelAndView("redirect:/moments");
+        if(bookid==0)
+            return new ModelAndView("redirect:/moments");
+        else
+            return new ModelAndView("redirect:/book/"+bookid);
     }
 
     //麦友

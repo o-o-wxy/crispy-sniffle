@@ -55,54 +55,107 @@
         <div>
             <h3 style="font-weight: bold" th:text="${book.getName()}"></h3>
         </div>
-        <div class="myrow" >
-            <div style="width: 170px">
-                <img class="cover"  th:src="${book.getCover()}">
-            </div>
-            <div style="width: 500px">
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSubName())}" th:text="'子标题:'+${book.getSubName()}">子标题</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTranslators())}" th:text="'译者:'+${book.getTranslators()}">译者</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAltName())}" th:text="'原标题:'+${book.getAltName()}">原标题</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAuthors())}" th:text="'作者:'+${book.getAuthors()}">作者</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSeries())}" th:text="'系列:'+${book.getSeries()}">系列</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublisher())}" th:text="'出版社:'+${book.getPublisher()}">出版社</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublishDate())}" th:text="'出版日期:'+${book.getPublishDate()}">出版日期</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPages())}" th:text="'页数:'+${book.getPages()}">页数</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPrice())}" th:text="'价格:'+${book.getPrice()}">价格</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getBinding())}" th:text="${book.getBinding()}">包装</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getIsbn())}" th:text="'isbn:'+${book.getIsbn()}">isbn</p>
-                <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTags())}" th:text="${book.getTags()}">标签</p>
-            </div>
-            <div style="width: 300px">
-                <div>
-                    <h6>评分</h6>
-                    <h3 style="color: orange" th:text="${book.getDoubanScore()}"></h3>
-                    <p style="color: grey" th:text="'有 '+${book.getDoubanVotes()}+' 位麦友打了分'"></p>
+        <div class="row" style="padding-top: 10px">
+            <div style="width: 700px">
+                <div class="myrow" >
+                    <div style="width: 170px">
+                        <img class="cover"  th:src="${book.getCover()}">
+                    </div>
+                    <div style="width: 300px">
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSubName())}" th:text="'子标题:'+${book.getSubName()}">子标题</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTranslators())}" th:text="'译者:'+${book.getTranslators()}">译者</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAltName())}" th:text="'原标题:'+${book.getAltName()}">原标题</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getAuthors())}" th:text="'作者:'+${book.getAuthors()}">作者</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getSeries())}" th:text="'系列:'+${book.getSeries()}">系列</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublisher())}" th:text="'出版社:'+${book.getPublisher()}">出版社</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPublishDate())}" th:text="'出版日期:'+${book.getPublishDate()}">出版日期</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPages())}" th:text="'页数:'+${book.getPages()}">页数</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getPrice())}" th:text="'价格:'+${book.getPrice()}">价格</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getBinding())}" th:text="${book.getBinding()}">包装</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getIsbn())}" th:text="'isbn:'+${book.getIsbn()}">isbn</p>
+                        <p style="color: grey;font-size: 12px;margin: 0 auto" th:if="${not #strings.isEmpty(book.getTags())}" th:text="${book.getTags()}">标签</p>
+                    </div>
+                    <div style="width: 300px">
+                        <div>
+                            <h5 style="color: seagreen">评分</h5>
+                            <h3 style="color: orange" th:text="${book.getDoubanScore()}"></h3>
+                            <p style="color: grey" th:text="'有 '+${book.getDoubanVotes()}+' 位麦友打了分'"></p>
+                        </div>
+                        <div th:if="${userId} ne 0">
+                            <p th:if="${rating} ne 0" style="color: seagreen" th:text="'我的打分：'+${rating}"></p>
+                            <div class="alert alert-success" th:if="${not #strings.isEmpty(success)}" role="alert" th:text="${success}"></div>
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a th:href="@{'/score/'+${userId}+'/'+${book.getId()}+'/2'}" type="button" class="btn btn-secondary">2</a>
+                                <a th:href="@{'/score/'+${userId}+'/'+${book.getId()}+'/4'}" type="button" class="btn btn-secondary">4</a>
+                                <a th:href="@{'/score/'+${userId}+'/'+${book.getId()}+'/6'}" type="button" class="btn btn-secondary">6</a>
+                                <a th:href="@{'/score/'+${userId}+'/'+${book.getId()}+'/8'}" type="button" class="btn btn-secondary">8</a>
+                                <a th:href="@{'/score/'+${userId}+'/'+${book.getId()}+'/10'}" type="button" class="btn btn-secondary">10</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <p>没有下定决心写的打分内容</p>
+                <div th:if="${not #strings.isEmpty(book.getSummary())}" style="padding-top:30px;width: 700px">
+                    <h5 style="color: seagreen">简介</h5>
+                    <p th:text="${book.getSummary()}"></p>
+                </div>
+                <div th:if="${not #strings.isEmpty(book.getAuthorIntro())}" style="padding-top:30px;width: 700px">
+                    <h5 style="color: seagreen">作者简介</h5>
+                    <p th:text="${book.getAuthorIntro()}"></p>
+                </div>
+                <div style="padding-top: 30px;width: 700px" th:if="${userId} ne 0">
+                    <h5 style="color: seagreen">写个书评吧</h5>
+                    <form th:action="@{/comment}" method="post">
+                        <div class="form-group">
+                            <input type="text" class="form-control" maxlength="20" placeholder="请输入标题.." name="title">
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="5" maxlength="100" placeholder="请输入内容.." name="context"></textarea>
+                        </div>
+                        <input type="hidden" name="uid" th:value="${userId}">
+                        <input type="hidden" name="uname" th:value="${userName}">
+                        <input type="hidden" name="bookid" th:value="${book.getId()}">
+                        <div style="text-align:right">
+                            <button class="btn" style="background-color: seagreen;color: white" type="submit">发布</button>
+                        </div>
+                    </form>
+                </div>
+                <div style="padding-top: 30px;width: 700px">
+                    <h5 style="color: seagreen">麦友的阅读记录</h5>
+                    <div th:each="comment:${comments}">
+                        <hr>
+                        <div style="flex-direction:row;justify-content: space-between">
+                            <a style="color: seagreen;font-weight: bold;text-decoration-line: none" th:text="${comment.getUserName()}" th:href="@{'/user/'+${comment.getUserId()}}">用户名</a>
+                            <!--/*@thymesVar id="getCreateTime" type="java.sql.Timestamp"*/-->
+                            <p style="color: grey" th:text="${comment.getCreateTime()}">创建时间</p>
+                        </div>
+                        <p style="color: orange;margin: 0px" th:text="${comment.getTitle()}">标题</p>
+                        <p style="margin: 0px" th:text="${comment.getContext()}">评价内容</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div th:if="${not #strings.isEmpty(book.getSummary())}" style="padding-top:30px;width: 900px">
-            <h6 style="color: seagreen">简介</h6>
-            <p th:text="${book.getSummary()}"></p>
-        </div>
-        <div th:if="${not #strings.isEmpty(book.getAuthorIntro())}" style="padding-top:30px;width: 900px">
-            <h6 style="color: seagreen">作者简介</h6>
-            <p th:text="${book.getAuthorIntro()}"></p>
-        </div>
-        <div style="padding-top: 30px;width: 900px">
-            <h6 style="color: seagreen">麦友的阅读记录</h6>
-            <div th:each="comment:${comments}">
-                <hr>
-                <div style="flex-direction:row;justify-content: space-between">
-                    <a style="color: seagreen;font-weight: bold;text-decoration-line: none" th:text="${comment.getUserName()}" th:href="@{'/user/'+${comment.getUserId()}}">用户名</a>
-                    <p style="color: grey" th:text="${comment.getCreate()}">创建时间</p>
+            <div style="padding-left: 100px;width: 400px">
+                <h5 style="color: seagreen">二手信息</h5>
+                <form th:action="@{/sale}" method="post">
+                    <div style="flex-direction: row;justify-content: space-between">
+                        <div>
+                            <input type="text" class="form-control" placeholder="请输入链接..." name="href">
+                            <input type="hidden" name="uid" th:value="${userId}">
+                            <input type="hidden" name="uname" th:value="${userName}">
+                            <input type="hidden" name="bookid" th:value="${book.getId()}">
+                        </div>
+                        <div style="padding-top: 20px">
+                            <button class="btn" style=" background-color: seagreen;color: white" type="submit">发布</button>
+                        </div>
+                    </div>
+                </form>
+                <div style="flex-direction:row;padding-top: 20px" th:each="sale:${saleEntities}">
+                    <a th:text="${sale.getUsername()}"></a>
+                    <a style="padding-left: 20px" th:href="@{${sale.getHref()}}" th:text="${sale.getHref()}"></a>
                 </div>
-                <p th:text="${comment.getContext()}">评价内容</p>
+
             </div>
         </div>
+
     </div>
 
 
