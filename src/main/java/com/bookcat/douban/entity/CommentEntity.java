@@ -8,10 +8,11 @@ import java.util.Objects;
 @Table(name = "comment", schema = "doubanDB", catalog = "")
 public class CommentEntity {
     private int id;
-    private Integer bookId;
+    private int bookId;
+    private String title;
     private String context;
     private int userId;
-    private Timestamp create;
+    private Timestamp createTime;
     private String userName;
 
     @Id
@@ -26,12 +27,22 @@ public class CommentEntity {
 
     @Basic
     @Column(name = "book_id")
-    public Integer getBookId() {
+    public int getBookId() {
         return bookId;
     }
 
-    public void setBookId(Integer bookId) {
+    public void setBookId(int bookId) {
         this.bookId = bookId;
+    }
+
+    @Basic
+    @Column(name = "title")
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Basic
@@ -55,13 +66,13 @@ public class CommentEntity {
     }
 
     @Basic
-    @Column(name = "create")
-    public Timestamp getCreate() {
-        return create;
+    @Column(name = "create_time")
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate(Timestamp create) {
-        this.create = create;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 
     @Basic
@@ -81,14 +92,15 @@ public class CommentEntity {
         CommentEntity that = (CommentEntity) o;
         return id == that.id &&
                 userId == that.userId &&
-                Objects.equals(bookId, that.bookId) &&
+                bookId == that.bookId &&
+                Objects.equals(title, that.title) &&
                 Objects.equals(context, that.context) &&
-                Objects.equals(create, that.create) &&
+                Objects.equals(createTime, that.createTime) &&
                 Objects.equals(userName, that.userName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bookId, context, userId, create, userName);
+        return Objects.hash(id, bookId, title, context, userId, createTime, userName);
     }
 }

@@ -1,35 +1,36 @@
 package com.bookcat.douban.controller;
 
-import com.bookcat.douban.entity.ActivityEntity;
-import com.bookcat.douban.entity.BooksEntity;
-import com.bookcat.douban.entity.UsersEntity;
-import com.bookcat.douban.formbean.Activity;
-import com.bookcat.douban.formbean.Book;
-import com.bookcat.douban.formbean.User;
-import com.bookcat.douban.repositories.ActivityRepository;
-import com.bookcat.douban.repositories.BookRepository;
-import com.bookcat.douban.repositories.UserRepository;
+import com.bookcat.douban.entity.*;
+import com.bookcat.douban.formbean.*;
+import com.bookcat.douban.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class UserController {
     private final UserRepository repository;
     private final ActivityRepository activityRepository;
     private final BookRepository bookRepository;
-    UserController(UserRepository repository,ActivityRepository activityRepository,BookRepository bookRepository) {
+    private final CommentRepository commentRepository;
+    private final FriendRepository friendRepository;
+    private final RankRepository rankRepository;
+    UserController(UserRepository repository, ActivityRepository activityRepository, BookRepository bookRepository, CommentRepository commentRepository, FriendRepository friendRepository, RankRepository rankRepository) {
         this.repository = repository;
         this.bookRepository = bookRepository;
         this.activityRepository = activityRepository;
+        this.commentRepository = commentRepository;
+        this.friendRepository = friendRepository;
+        this.rankRepository = rankRepository;
     }
 
     @GetMapping("/user/0")
@@ -141,6 +142,224 @@ public class UserController {
             return 0;
     }
 
+    @GetMapping("/score/{userid}/{bookid}/{score}")
+    @ResponseBody
+    int score(@PathVariable int userid,@PathVariable int bookid,@PathVariable int score){
+        int ret = repository.score(score,bookid);
+        repository.rating(userid,bookid,score);
+        return  ret;
+    }
 
+    //修改资料 (未写
+    @GetMapping("/modify")
+    String modifyGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+        return "modify";
+    }
+
+    //麦圈
+    @GetMapping("/moments")
+    String momentsGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+
+        List<CommentEntity> commentEntityList = commentRepository.findAll();
+        List<Comment> commentList = new ArrayList<>();
+        Collections.reverse(commentEntityList);
+        for (CommentEntity comment:commentEntityList) {
+            Comment newComment = new Comment();
+            BeanUtils.copyProperties(comment,newComment);
+            commentList.add(newComment);
+        }
+        model.addAttribute("comments",commentList);
+        return "moments";
+    }
+
+    //个人中心
+    @GetMapping("/userCenter")
+    String userCenterGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+
+        List<CommentEntity> commentEntityList = commentRepository.findAll();
+        List<Comment> commentList = new ArrayList<>();
+        Collections.reverse(commentEntityList);
+        for (CommentEntity comment:commentEntityList) {
+            Comment newComment = new Comment();
+            BeanUtils.copyProperties(comment,newComment);
+            commentList.add(newComment);
+        }
+        model.addAttribute("comments",commentList);
+
+        int id = Integer.parseInt(model.getAttribute("userId").toString());
+        String sig = repository.findByUserId(id).getUserSummary();
+        if(sig != null){
+            model.addAttribute("userSummary",sig);
+        }
+
+        List<Friend> friendList = new ArrayList<>();
+        for (Comment comment:commentList) {
+            FriendsEntity friendsEntity = friendRepository.findByFriendIdAndUserId(comment.getUserId(),id);
+            if(friendsEntity != null){
+                Friend newFriend = new Friend();
+                BeanUtils.copyProperties(friendsEntity,newFriend);
+                friendList.add(newFriend);
+            }
+            else{
+                continue;
+            }
+        }
+        model.addAttribute("friends",friendList);
+
+        return "userCenter";
+    }
+
+    //发表评论
+    @PostMapping("/comment")
+    public ModelAndView commentPost(Model model, HttpServletRequest request) {
+        int bookid = 0;
+        String title = request.getParameter("title");
+        String context = request.getParameter("context");
+        int uid = Integer.parseInt(request.getParameter("uid"));
+        String uname = request.getParameter("uname");
+
+        commentRepository.comment(bookid,title,context,uid,uname);
+
+        return new ModelAndView("redirect:/moments");
+    }
+
+    //麦友
+    @GetMapping("/friends")
+    String friendsGet(Model model, HttpServletRequest request) {
+        if(request.getCookies()!=null){
+            for (Cookie cookie:request.getCookies()) {
+                if(cookie.getName().equals("userName"))
+                    model.addAttribute("userName",cookie.getValue());
+                if (cookie.getName().equals("userId"))
+                    model.addAttribute("userId",cookie.getValue());
+            }
+        }
+        if(model.getAttribute("userName")==null)
+            model.addAttribute("userName","登录/注册");
+        if(model.getAttribute("userId")==null)
+            model.addAttribute("userId",0);
+
+        int id = Integer.parseInt(model.getAttribute("userId").toString());
+        List<FriendsEntity> friendsEntityList = friendRepository.findAllByUserId(id);
+        List<Friend> friendList = new ArrayList<>();
+        Collections.reverse(friendsEntityList);
+        for (FriendsEntity friend:friendsEntityList) {
+            Friend newFriend = new Friend();
+            BeanUtils.copyProperties(friend,newFriend);
+            friendList.add(newFriend);
+        }
+        model.addAttribute("friends",friendList);
+        List<User> userList = new ArrayList<>();
+        for(Friend friend: friendList){
+            UsersEntity userEntity = repository.findByUserId(friend.getFriendId());
+            User newUser = new User();
+            BeanUtils.copyProperties(userEntity,newUser);
+            userList.add(newUser);
+        }
+        model.addAttribute("users",userList);
+        return "friends";
+    }
+
+    //好友请求同意
+    @GetMapping("/agree/{uid}/{fid}")
+    public ModelAndView agreePost(@PathVariable int uid,@PathVariable int fid){
+        friendRepository.agree(uid,fid);
+        friendRepository.agree(fid,uid);
+
+        return new ModelAndView("redirect:/friends");
+    }
+
+    //好友请求忽略
+    @GetMapping("/disagree/{uid}/{fid}")
+    public ModelAndView disagreePost(@PathVariable int uid,@PathVariable int fid){
+        friendRepository.disagree(uid,fid);
+        friendRepository.disagree(fid,uid);
+
+        return new ModelAndView("redirect:/friends");
+    }
+
+    //好友删除
+    @GetMapping("/delete/{uid}/{fid}")
+    public ModelAndView deletePost(@PathVariable int uid,@PathVariable int fid){
+        friendRepository.delete(uid,fid);
+        friendRepository.delete(fid,uid);
+
+        return new ModelAndView("redirect:/friends");
+    }
+
+    //排行榜
+//    @GetMapping("/rank")
+//    String rankGet(Model model, HttpServletRequest request) {
+//        if(request.getCookies()!=null){
+//            for (Cookie cookie:request.getCookies()) {
+//                if(cookie.getName().equals("userName"))
+//                    model.addAttribute("userName",cookie.getValue());
+//                if (cookie.getName().equals("userId"))
+//                    model.addAttribute("userId",cookie.getValue());
+//            }
+//        }
+//        if(model.getAttribute("userName")==null)
+//            model.addAttribute("userName","登录/注册");
+//        if(model.getAttribute("userId")==null)
+//            model.addAttribute("userId",0);
+//
+//        int id = Integer.parseInt(model.getAttribute("userId").toString());
+//        List<RatingsEntity> ratingsEntityList = rankRepository.countRes();
+//        List<Rating> ratingList = new ArrayList<>();
+//        Collections.reverse(ratingList);
+//        for (FriendsEntity friend:friendsEntityList) {
+//            Friend newFriend = new Friend();
+//            BeanUtils.copyProperties(friend,newFriend);
+//            friendList.add(newFriend);
+//        }
+//        model.addAttribute("rank",friendList);
+//
+//        List<User> userList = new ArrayList<>();
+//        for(Friend friend: friendList){
+//            UsersEntity userEntity = repository.findByUserId(friend.getFriendId());
+//            User newUser = new User();
+//            BeanUtils.copyProperties(userEntity,newUser);
+//            userList.add(newUser);
+//        }
+//        model.addAttribute("users",userList);
+//
+//        return "rank";
+//    }
 
 }

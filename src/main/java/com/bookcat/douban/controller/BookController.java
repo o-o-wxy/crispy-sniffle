@@ -48,7 +48,7 @@ public class BookController {
         if(model.getAttribute("userId")==null)
             model.addAttribute("userId",0);
         List<ActivityEntity> activityEntityList = activityRepository.findBySelected(1);
-        List<Activity> activityList =new ArrayList<>();
+        List<Activity> activityList = new ArrayList<>();
         for (ActivityEntity activityEntity:activityEntityList){
             Activity newOne = new Activity();
             BeanUtils.copyProperties(activityEntity,newOne);
