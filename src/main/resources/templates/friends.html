@@ -8,7 +8,7 @@
     <meta name="referrer" content="never">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <title>主页</title>
+    <title>麦友</title>
 </head>
 <style>
     .myrow{
@@ -47,19 +47,26 @@
         <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
             <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
+            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/userCenter/'+${userId}}">userName</a>
         </form>
     </div>
 </nav>
 <div class="container-fluid" style="padding: 70px">
     <div class="myrow" >
         <div style="width: 200px">
-            <li class="nav-item active">
-                <a class="nav-link" style="color: slategrey" th:href="@{'/userCenter'}">个人中心</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" style="color: slategrey" th:href="@{'/friends'}">麦友</a>
-            </li>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" style="color: cadetblue;font-size: 18px" th:href="@{'/friends'}">麦友</a>
+                </li>
+
+                <div style="height: 30px">
+                    <h5 style="color: seagreen">    </h5>
+                </div>
+
+                <li class="nav-item active">
+                    <a class="nav-link" style="color: cadetblue;font-size: 18px" th:href="@{'/rank'}">排行榜</a>
+                </li>
+            </ul>
         </div>
 
         <div style="padding-top: 30px;width: 900px">
@@ -72,7 +79,7 @@
                                 <div th:switch="${user.getUserId()}">
                                     <div th:case="${friend.getFriendId()}">
                                         <div style="flex-direction:row;justify-content: space-between">
-                                            <h5 style="color: darkgoldenrod;font-weight: bold;text-decoration-line: none;text-align: left" th:text="${user.getUserName()}"></h5>
+                                            <a style="color: darkgoldenrod;font-size:23px;font-weight: bold;text-decoration-line: none;text-align: left" th:text="${user.getUserName()}" th:href="@{'/userCenter/'+${user.getUserId()}}"></a>
                                             <h6 style="color: slategray;font-weight: bold;text-decoration-line: none;text-align: left" th:text="${user.getUserSummary()}"></h6>
                                             <div style="text-align:right">
                                                 <a class="btn" style="background-color: brown;color: white;text-align: right" th:href="@{'/delete/'+${friend.getUserId()}+'/'+${user.getUserId()}}">删除</a>
@@ -100,7 +107,7 @@
                             <div th:switch="${user.getUserId()}">
                                 <div th:case="${friend.getFriendId()}">
                                         <div style="flex-direction:row;justify-content: space-between">
-                                            <p style="color: dimgray" th:text="${user.getUserName()}"></p>
+                                            <a style="color: dimgray;font-size:18px" th:text="${user.getUserName()}" th:href="@{'/userCenter/'+${user.getUserId()}}"></a>
                                             <div style="text-align:right">
                                                 <a class="btn" style="background-color: seagreen;color: white" th:href="@{'/agree/'+${friend.getUserId()}+'/'+${user.getUserId()}}">同意</a>
                                                 <a class="btn" style="background-color: brown;color: white" th:href="@{'/disagree/'+${friend.getUserId()}+'/'+${user.getUserId()}}">忽略</a>
@@ -112,6 +119,51 @@
                     </div>
                 </div>
             </div>
+
+<!--            <div style="height: 50px">-->
+<!--                <h5 style="color: seagreen">    </h5>-->
+<!--            </div>-->
+
+<!--            <h5 style="color: seagreen">发起申请</h5>-->
+<!--            <div th:each="friend:${friends}">-->
+<!--                <div th:switch="${friend.getState()}">-->
+<!--                    <div th:case="'1'">-->
+<!--                        <hr>-->
+<!--                        <div th:each="user:${users}">-->
+<!--                            <div th:switch="${user.getUserId()}">-->
+<!--                                <div th:case="${friend.getFriendId()}">-->
+<!--                                    <div th:switch="${user.getUserId()}">-->
+<!--                                        <div th:case="0">-->
+<!--                                            <div style="flex-direction:row;justify-content: space-between">-->
+<!--                                                <p style="color: dimgray" th:text="${user.getUserName()}"></p>-->
+<!--                                                <div style="text-align:right">-->
+<!--                                                    <p>等待对方通过..</p>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div th:case="2">-->
+<!--                                            <div style="flex-direction:row;justify-content: space-between">-->
+<!--                                                <p style="color: dimgray" th:text="${user.getUserName()}"></p>-->
+<!--                                                <div style="text-align:right">-->
+<!--                                                    <p>等待对方通过..</p>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div th:case="-1">-->
+<!--                                            <div style="flex-direction:row;justify-content: space-between">-->
+<!--                                                <p style="color: dimgray" th:text="${user.getUserName()}"></p>-->
+<!--                                                <div style="text-align:right">-->
+<!--                                                    <p>等待对方通过..</p>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </div>
 </div>

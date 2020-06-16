@@ -1,16 +1,18 @@
 package com.bookcat.douban.repositories;
 
+import com.bookcat.douban.entity.BooksEntity;
 import com.bookcat.douban.entity.UsersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface UserRepository extends JpaRepository<UsersEntity, Integer> {
     UsersEntity findByUserName(String name);
     UsersEntity findByUserId(int id);
-    boolean existsById(int id);
+
     @Transactional
     @Modifying
     @Query(value =
@@ -24,6 +26,5 @@ public interface UserRepository extends JpaRepository<UsersEntity, Integer> {
             "INSERT INTO ratings (user_id,book_id,score) VALUES (?1, ?2, ?3)"
             , nativeQuery = true)
     int rating(int userID,int bookID,int rate);
-
 
 }

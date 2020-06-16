@@ -8,7 +8,7 @@
     <meta name="referrer" content="never">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <title>主页</title>
+    <title>个人中心</title>
 </head>
 <style>
     .myrow{
@@ -47,64 +47,54 @@
         <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
             <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
+            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/userCenter/'+${userId}}">userName</a>
         </form>
     </div>
 </nav>
 <div class="container-fluid" style="padding: 70px">
     <div class="myrow" >
-        <div style="width: 200px">
-            <li class="nav-item active">
-                <a class="nav-link" style="color: slategrey" th:href="@{'/userCenter'}">个人中心</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" style="color: slategrey" th:href="@{'/friends'}">麦友</a>
-            </li>
-        </div>
-
-        <div style="padding-top: 30px;width: 900px">
-            <h4 style="color: seagreen">麦友动态</h4>
-            <div th:each="comment:${comments}">
-                <div th:each="friend:${friends}">
-                    <div th:switch="${friend.getFriendId()}">
-                        <div th:case="${comment.getUserId()}">
-                            <div th:switch="${friend.getState()}">
-                                <div th:case="'2'">
-                                    <hr>
-                                    <div style="flex-direction:row;justify-content: space-between">
-                                        <h5 style="color: darkgoldenrod" th:text="${comment.getTitle()}"></h5>
-                                        <p th:text="${comment.getContext()}"></p>
-                                        <div style="text-align:right">
-                                            <h6 style="color: seagreen;font-weight: bold;text-decoration-line: none" th:text="${comment.getUserName()}"></h6>
-                                            <p style="color: grey" th:text="${comment.getCreateTime()}"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div style="width: 150px">
-            <h5 style="color: seagreen">    </h5>
-        </div>
-
         <div style="padding-top: 30px;width: 500px">
             <h5 style="color: seagreen">个人信息</h5>
 
             <div style="flex-direction:row;justify-content: space-between">
                 <p>用户名</p>
-                <p style="color: dimgray" th:text="${userName}"></p>
+                <p style="color: dimgray" th:text="${user.getUserName()}"></p>
+                <div th:if="${userId} ne ${user.getUserId()}">
+                    <div th:if="${isFriend} ne '1'">
+                        <div style="text-align:center">
+                            <a class="btn" style="background-color: seagreen;color: white" th:href="@{'/addFriend/'+${userId}+'/'+${user.getUserId()}}">加麦友</a>
+                        </div>
+                    </div>
+                </div>
                 <p>签名</p>
-                <p style="color: dimgray" th:text="${userSummary}"></p>
+                <p style="color: dimgray" th:text="${user.getUserSummary()}"></p>
             </div>
 
-            <div style="text-align:center">
-                <form th:action="@{/modify}" method="post">
-                    <button class="btn" style="border-color: seagreen;background-color: white;color: seagreen" type="submit">修改</button>
-                </form>
+            <div th:if="${userId} eq ${user.getUserId()}">
+                <div style="text-align:center">
+                    <form th:action="@{/modify}" method="post">
+                        <button class="btn" style="border-color: seagreen;background-color: white;color: seagreen" type="submit">修改</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding-top: 30px;width: 900px">
+            <h4 style="color: seagreen">个人动态</h4>
+            <div th:each="comment:${comments}">
+                <hr>
+                <div style="flex-direction:row;justify-content: space-between">
+                    <h5 style="color: darkgoldenrod" th:text="${comment.getTitle()}"></h5>
+                    <p th:text="${comment.getContext()}"></p>
+                    <div style="text-align:right">
+                        <p style="color: grey" th:text="${comment.getCreateTime()}"></p>
+                    </div>
+                    <div th:if="${userId} eq ${user.getUserId()}">
+                        <div style="text-align:right">
+                            <a class="btn" style="background-color: brown;color: white;text-align: right" th:href="@{'/delComment/'+${userId}+'/'+${comment.getId()}}">删除</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

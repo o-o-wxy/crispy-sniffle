@@ -1,63 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="referrer" content="never">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <title>排行榜</title>
 </head>
+<style>
+    .myrow{
+        display: flex;
+        flex-direction:row;
+        justify-content:flex-start;
+    }
+    .cover{
+        width: 150px;
+        height: 200px;
+    }
+    .singleline{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .activity-cover{
+        height: 400px;
+    }
+</style>
 <body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand">野麦</a>
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/index'}">首页</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/act'}">活动</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/moments'}">麦圈</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
+            <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/userCenter/'+${userId}}">userName</a>
+        </form>
+    </div>
+</nav>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-4">
-            <div class="media">
-                <div class="media-left" >
-                    <img class="center-block" src="https://yemai.oss-cn-beijing.aliyuncs.com/img/trophy.svg" class="media-object" style="width:60px">
-                </div>
-                <div class="media-body" class="text-center">
-                    <h3>好友阅读排行榜(月度)</h3>
-                </div>
-            </div>
+<div class="container-fluid" style="padding: 70px">
+    <div class="myrow" >
+        <div style="width: 200px">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" style="color: cadetblue;font-size: 18px" th:href="@{'/friends'}">麦友</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" style="color: cadetblue;font-size: 18px" th:href="@{'/rank'}">排行榜</a>
+                </li>
+            </ul>
         </div>
+
+        <div style="padding-top: 30px;width: 900px;text-align: center">
+            <h3>好友阅读排行榜(月度)</h3>
+
+            <div class="container" style="width: 800px">
+                <table class="table">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>昵称</th>
+                        <th>已阅(本)</th>
+                    </tr>
+                    </thead>
+                    <div th:each="rank:${ranks}">
+                        <div th:switch="${rank.getUserId()}">
+                            <div th:case="${userId}">
+                                <tr class="table-info">
+                                    <td th:text="${userName}"></td>
+                                    <td th:text="${rank.getSum()}"></td>
+                                </tr>
+                            </div>
+                            <div th:case="*">
+                                <div th:each="friend:${friends}">
+                                    <div th:switch="${friend.getFriendId()}">
+                                        <div th:case="${rank.getUserId()}">
+                                            <div th:switch="${friend.getState()}">
+                                                <div th:case="'2'">
+                                                    <div th:each="user:${users}">
+                                                        <div th:switch="${user.getUserId()}">
+                                                            <div th:case="${friend.getFriendId()}">
+                                                                <tr class="table-success">
+                                                                    <td th:text="${user.getUserName()}"></td>
+                                                                    <td th:text="${rank.getSum()}"></td>
+                                                                </tr>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
     </div>
 </div>
 
-<div class="container" style="width: 800px">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>排名</th>
-            <th>昵称</th>
-            <th>已阅(本)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="success">
-            <td>1</td>
-            <td>麦子027</td>
-            <td>5</td>
-        </tr>
-        <tr class="success">
-            <td>2</td>
-            <td>麦子036</td>
-            <td>3</td>
-        </tr>
-        <tr  class="success">
-            <td>3</td>
-            <td>麦子052</td>
-            <td>2</td>
-        </tr>
-        <tr  class="danger">
-            <td>4</td>
-            <td>麦子048</td>
-            <td>0</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>

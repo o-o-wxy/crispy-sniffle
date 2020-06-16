@@ -47,7 +47,7 @@
         <form class="form-inline my-2 my-lg-0" th:action="@{/search}" method="post">
             <input class="form-control mr-sm-2" name="key" type="text" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/user/'+${userId}}">userName</a>
+            <a class="nav-link" style="color: white" th:text="${userName}" th:href="@{'/userCenter/'+${userId}}">userName</a>
         </form>
     </div>
 </nav>
